@@ -83,7 +83,9 @@ void ofApp::setup(){
 	else {
 		cout << "Can't open image file" << endl;
 	}
-
+    
+    background.load("images/tempOcean.jpg");
+    
 	ofSetBackgroundColor(ofColor::black);
 
 	
@@ -94,7 +96,7 @@ void ofApp::setup(){
 	emitter = new AgentEmitter();  // C++ polymorphism
 
 	emitter->pos = glm::vec3(ofGetWindowWidth() / 2.0, ofGetWindowHeight() / 2.0, 0);
-	emitter->drawable = true;
+	emitter->drawable = false; //Hides emmitter
 	if (imageLoaded) emitter->setChildImage(defaultImage);
 	emitter->start();
 
@@ -106,7 +108,7 @@ void ofApp::setup(){
 
 	gui.setup();
 	gui.add(rate.setup("rate", 1, .5, 10));
-	gui.add(life.setup("life", 5, .1, 10));
+	gui.add(life.setup("life", 5, .1, 15));
 	gui.add(velocity.setup("Agent Velocity", ofVec3f(0, -200, 0), ofVec3f(-1000, -1000, -1000), ofVec3f(1000, 1000, 1000)));
 	gui.add(scale.setup("Agent Scale", .5, .1, 1.0));
 	//gui.add(rotationSpeed.setup("Rotation Speed (deg/Frame)", 0, 0, 10));
@@ -120,7 +122,8 @@ void ofApp::setup(){
     gui.add(nEnergy.setup("Player Energy", 10, 1, 25));
     
     gui.add(agentSprite.setup("Toggle Agent Sprite", true));
-
+    gui.add(level.setup("Level of Difficulty", 1,1,3));
+    
 	bHide = false;
 
 }
@@ -138,6 +141,26 @@ void ofApp::update() {
         }
     }
     
+    if (level == 1) {
+        rate = 1;
+        life = 5;
+        nAgents = 1;
+        nEnergy = 15;
+    }
+    
+    if (level == 2) {
+        rate = 1.5;
+        life = 7.5;
+        nAgents = 2;
+        nEnergy = 10;
+    }
+    
+    if (level == 3) {
+        rate = 3;
+        life = 10;
+        nAgents = 5;
+        nEnergy = 7;
+    }
     emitter->setRate(rate);
     emitter->setLifespan(life * 1000);    // convert to milliseconds
     emitter->setVelocity(ofVec3f(velocity->x, velocity->y, velocity->z));
@@ -189,23 +212,23 @@ void ofApp::update() {
             if (target->inside(inBetween) && emitter->sys->sprites[i].inside(inBetween)) {
                 emitter->sys->sprites.erase(emitter->sys->sprites.begin() + i);
                 playerEnergy--;
-                cout << playerEnergy << endl;
+                //cout << playerEnergy << endl;
                 
                 if (playerEnergy == 0) {
                     emitter->stop();
                     state = GameState::END; //End game if energy is equal to 0
                 }
-                if (target->inside(headerPoint) && emitter->sys->sprites[i].inside(headerPoint)) {
-                    emitter->sys->sprites.erase(emitter->sys->sprites.begin() + i);
-                    playerEnergy--;
-                    cout << playerEnergy << endl;
-                    
-                    if (playerEnergy == 0) {
-                        emitter->stop();
-                        state = GameState::END; //End game if energy is equal to 0
-                    }
-                    
+            if (target->inside(headerPoint) && emitter->sys->sprites[i].inside(headerPoint)) {
+                emitter->sys->sprites.erase(emitter->sys->sprites.begin() + i);
+                playerEnergy--;
+                //cout << playerEnergy << endl;
+                
+                if (playerEnergy == 0) {
+                    emitter->stop();
+                    state = GameState::END; //End game if energy is equal to 0
                 }
+                
+            }
                 
             }
         }
@@ -257,17 +280,22 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofSetColor(ofColor::white);
+    glEnable(GL_DEPTH);
+    background.draw(0,0,1);
+    ofSetColor(ofColor::yellow);
+
     switch (state) {
-            
+    
         case GameState::START: {
-            //ofClear(ofColor::black);
+            ofSetColor(ofColor::white);
             string begin = "Press Spacebar to Begin!";
             font->drawString(begin, ofGetWindowWidth()/2-font->stringWidth(begin)/2, ofGetWindowHeight()/2);
+            ofSetColor(ofColor::yellow);
             break;
         }
         case GameState::PLAY: {
-            //ofClear(ofColor::black);
-            //font->drawString("Testing String", ofGetWindowWidth()/2, ofGetWindowHeight()/2);
+                        
             emitter->draw();
             target->draw();
             

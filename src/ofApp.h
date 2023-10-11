@@ -53,7 +53,8 @@ class ofApp : public ofBaseApp{
 		bool imageLoaded;
 		bool bDrag = false;
 		glm::vec3 lastMousePos;
-
+        ofImage background;
+    
 		// Some basic UI
 		//
 		bool bHide;
@@ -69,7 +70,7 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider playerScale;
         ofxIntSlider nAgents;
         ofxIntSlider nEnergy;
-
+        ofxIntSlider level;
         ofxToggle agentSprite;
         ofxPanel gui;
     
