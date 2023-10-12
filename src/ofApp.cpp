@@ -77,14 +77,14 @@ void ofApp::setup(){
     
 	// create an image for sprites being spawned by emitter
 	//
-	if (defaultImage.load("images/space-invaders-ship-scaled.png")) {
+	if (defaultImage.load("images/octoSprite.png")) {
 		imageLoaded = true;
 	}
 	else {
 		cout << "Can't open image file" << endl;
 	}
     
-    background.load("images/tempOcean.jpg");
+    background.load("images/backGroundsmall.png");
     
 	ofSetBackgroundColor(ofColor::black);
 
@@ -115,7 +115,7 @@ void ofApp::setup(){
     gui.add(turnSpeed.setup("Agent Turn Speed", 1, 0.5, 7.5));
     
     gui.add(playerSpeed.setup("Player Speed", 5, 3, 10));
-    gui.add(playerRot.setup("Player rotation speed (deg)", 1, .5, 5));
+    gui.add(playerRot.setup("Player rotation speed (deg)", 2, .5, 5));
     gui.add(playerScale.setup("Player Scale", 1, 0.1, 3));
     
     gui.add(nAgents.setup("Number of Agents", 1, 1, 10));
@@ -124,6 +124,7 @@ void ofApp::setup(){
     gui.add(agentSprite.setup("Toggle Agent Sprite", true));
     gui.add(level.setup("Level of Difficulty", 1,1,3));
     
+    currentLevel == 1;
 	bHide = false;
 
 }
@@ -141,25 +142,28 @@ void ofApp::update() {
         }
     }
     
-    if (level == 1) {
+    if (level == 1 && currentLevel != 1) {
         rate = 1;
         life = 5;
         nAgents = 1;
         nEnergy = 15;
+        currentLevel = 1;
     }
     
-    if (level == 2) {
+    if (level == 2 && currentLevel != 2) {
         rate = 1.5;
         life = 7.5;
         nAgents = 2;
         nEnergy = 10;
+        currentLevel = 2;
     }
     
-    if (level == 3) {
+    if (level == 3 && currentLevel != 3) {
         rate = 3;
         life = 10;
         nAgents = 5;
         nEnergy = 7;
+        currentLevel = 3;
     }
     emitter->setRate(rate);
     emitter->setLifespan(life * 1000);    // convert to milliseconds
@@ -217,6 +221,7 @@ void ofApp::update() {
                 if (playerEnergy == 0) {
                     emitter->stop();
                     state = GameState::END; //End game if energy is equal to 0
+                    totalSurvivedTime = elapsedTime;
                 }
             if (target->inside(headerPoint) && emitter->sys->sprites[i].inside(headerPoint)) {
                 emitter->sys->sprites.erase(emitter->sys->sprites.begin() + i);
@@ -326,8 +331,10 @@ void ofApp::draw(){
             //Centers both lines of game over
             string over1 = "GAME OVER";
             string over2 = "Press Spacebar to Restart";
+            string time = "You survived: " + to_string(totalSurvivedTime) + " seconds!";
             font->drawString(over1, ofGetWindowWidth()/2-font->stringWidth(over1)/2, ofGetWindowHeight()/2);
-            font->drawString(over2, ofGetWindowHeight()/2, ofGetWindowHeight()/2+font->stringHeight(over2));
+            font->drawString(over2, ofGetWindowWidth()/2-font->stringWidth(over2)/2, ofGetWindowHeight()/2+font->stringHeight(over2));
+            font->drawString(time, ofGetWindowWidth()/2-font->stringWidth(time)/2, ofGetWindowHeight()/2+font->stringHeight(time)+font->stringHeight(over2));
             break;
         }
     }
@@ -339,8 +346,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
 //	cout << "mouse( " << x << "," << y << ")" << endl;
-
-
+    
 }
 
 //--------------------------------------------------------------

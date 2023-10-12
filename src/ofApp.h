@@ -80,6 +80,8 @@ class ofApp : public ofBaseApp{
         int totalPlayerEnergy;
         float elapsedTime;
         float startTime;
+        int currentLevel;
+        float totalSurvivedTime;
     
         GameState state = GameState::START;
         ofTrueTypeFont *font;
